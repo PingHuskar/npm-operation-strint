@@ -1,6 +1,6 @@
 const DEBUG = false;
 const snumpat = /^\d+$/;
-const isEven = require("is-even");
+const isdivisiblebyx = require("isdivisiblebyx")
 
 const numinbase10 = [`0`, `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`]
 
@@ -10,7 +10,7 @@ const padWithLeadingZeros = (num, totalLength) => {
   return String(num).padStart(totalLength, "0");
 };
 
-const sum = (snum1, snum2) => {
+const sum = (snum1, snum2, RmLZeros = true) => {
   const base = 10;
   if (!snum1 || !snum2) {
     return `Numbers cannot be empty`;
@@ -18,8 +18,10 @@ const sum = (snum1, snum2) => {
   if (!snumpat.test(snum1) || !snumpat.test(snum2)) {
     return `Numbers must be numbers`;
   }
-  snum1 = removeLeadingZeros(snum1);
-  snum2 = removeLeadingZeros(snum2);
+  if (RmLZeros) {
+    snum1 = removeLeadingZeros(snum1);
+    snum2 = removeLeadingZeros(snum2);
+  }
   const lensnum1 = snum1.length;
   const lensnum2 = snum2.length;
   const maxlen = Math.max(lensnum1, lensnum2);
@@ -39,13 +41,17 @@ const sum = (snum1, snum2) => {
     carry = s >= base ? 1 : 0;
   }
   retstrarr.push(`${carry}`);
-  return removeLeadingZeros(retstrarr.reverse().join(""));
+  return RmLZeros
+    ? removeLeadingZeros(retstrarr.reverse().join(""))
+    : (carry ? retstrarr.reverse().join("") : retstrarr.reverse().join("").slice(-maxlen));
 };
 
-const minus = (snum1, snum2) => {
+const minus = (snum1, snum2, RmLZeros = true) => {
   const base = 10;
-  snum1 = removeLeadingZeros(snum1);
-  snum2 = removeLeadingZeros(snum2);
+  if (RmLZeros) {
+    snum1 = removeLeadingZeros(snum1);
+    snum2 = removeLeadingZeros(snum2);
+  }
   if (!snum1) {
     return `Numbers cannot be empty`;
   }
@@ -70,24 +76,27 @@ const minus = (snum1, snum2) => {
     let s = parseInt(a1.at(d)) - parseInt(a2.at(d));
     if (s < 0) {
       retstrarr.push(s < 0 ? s + base : s);
-      a1[d+1] = `${parseInt(a1.at(d+1)) - 1}`
+      a1[d + 1] = `${parseInt(a1.at(d + 1)) - 1}`;
     } else {
       retstrarr.push(s);
     }
   }
-  return removeLeadingZeros(retstrarr.reverse().join(""));
+  return RmLZeros
+    ? removeLeadingZeros(retstrarr.reverse().join(""))
+    : retstrarr.reverse().join("");
 };
 
-const multiplybysum = (snum1, snum2) => {
-  const base = 10;
+const multiplybysum = (snum1, snum2, RmLZeros = true) => {
   if (!snum1 || !snum2) {
     return `Numbers cannot be empty`;
   }
   if (!snumpat.test(snum1) || !snumpat.test(snum2)) {
     return `Numbers must be numbers`;
   }
-  snum1 = removeLeadingZeros(snum1);
-  snum2 = removeLeadingZeros(snum2);
+  if (RmLZeros) {
+    snum1 = removeLeadingZeros(snum1);
+    snum2 = removeLeadingZeros(snum2);
+  }
   const lensnum1 = snum1.length;
   const lensnum2 = snum2.length;
   const maxlen = Math.max(lensnum1, lensnum2);
@@ -95,11 +104,7 @@ const multiplybysum = (snum1, snum2) => {
   const zsnum2 = padWithLeadingZeros(snum2, maxlen);
   if (DEBUG) console.log(zsnum1);
   if (DEBUG) console.log(zsnum2);
-//   const a1 = zsnum1.split(``).reverse();
-//   const a2 = zsnum2.split(``).reverse();
-//   if (DEBUG) console.log(a1);
-//   if (DEBUG) console.log(a2);
-  let retValue = `0`
+  let retValue = `0`;
   while (snum2 != `` && snum1 != ``) {
     retValue = sum(retValue, snum1);
     snum2 = minus(snum2, `1`);
@@ -133,10 +138,12 @@ const CSRange = {
   ulong: `18446744073709551615`,
 };
 
-const IsMoreThan = (snum1, snum2) => {
-  snum1 = removeLeadingZeros(snum1);
-  snum2 = removeLeadingZeros(snum2);
-  if (!snum1 || !snum2) {
+const IsMoreThan = (snum1, snum2, RmLZeros = true) => {
+  if (RmLZeros) {
+    snum1 = removeLeadingZeros(snum1);
+    snum2 = removeLeadingZeros(snum2);
+  }
+    if (!snum1 || !snum2) {
     return `Numbers cannot be empty`;
   }
   if (!snumpat.test(snum1) || !snumpat.test(snum2)) {
@@ -156,30 +163,36 @@ const IsMoreThan = (snum1, snum2) => {
   return false
 }
 
-const divby2 = (snum) => {
-  snum = removeLeadingZeros(snum);
-  const base = 10
-  const retstrarray = []
-  let carry = 0
-  let temp1
-  let temp2 = 0
-  let d = 0
-  for (const s of snum.split('')) {
-    if (DEBUG) console.log(`s`,s);
-    if (DEBUG) console.log(`parseInt(s)+carry*base`, parseInt(s) + carry * base);
-    temp1 = parseInt(s)+carry*base;
-    if (DEBUG) console.log(`temp`,temp1);
+const divby2 = (snum, RmLZeros = true) => {
+  if (RmLZeros) {
+    snum = removeLeadingZeros(snum);
+  }
+  const base = 10;
+  const retstrarray = [];
+  let carry = 0;
+  let temp1;
+  let temp2 = 0;
+  let d = 0;
+  for (const s of snum.split("")) {
+    if (DEBUG) console.log(`s`, s);
+    if (DEBUG)
+      console.log(`parseInt(s)+carry*base`, parseInt(s) + carry * base);
+    temp1 = parseInt(s) + carry * base;
+    if (DEBUG) console.log(`temp`, temp1);
     d = Math.floor(temp1 / 2);
-    temp2 = 2 * d
+    temp2 = 2 * d;
     retstrarray.push(d);
     carry = temp1 - temp2;
     if (DEBUG) console.log(`carry`, carry);
     if (DEBUG) console.log(retstrarray);
   }
-  return removeLeadingZeros(retstrarray.join("")) + (isEven(snum) ? `` : `.5`);
-}
+  return RmLZeros
+    ? removeLeadingZeros(retstrarray.join("")) +
+        (isdivisiblebyx.IsDivisibleBy2(snum) ? `` : `.5`)
+    : retstrarray.join("") + (isdivisiblebyx.IsDivisibleBy2(snum) ? `` : `.5`);
+};
 
-const multiply = (snum1, snum2) => {
+const multiply = (snum1, snum2, RmLZeros = true) => {
   const base = 10;
   if (snum1 === `0` || snum2 === `0`) {
     return `0`;
@@ -190,8 +203,10 @@ const multiply = (snum1, snum2) => {
   if (!snumpat.test(snum1) || !snumpat.test(snum2)) {
     return `Numbers must be numbers`;
   }
-  snum1 = removeLeadingZeros(snum1);
-  snum2 = removeLeadingZeros(snum2);
+  if (RmLZeros) {
+    snum1 = removeLeadingZeros(snum1);
+    snum2 = removeLeadingZeros(snum2);
+  }
   const sumArr = []
   const swap = IsMoreThan(snum1, snum2);
   const arrsnum1 = swap ? snum1.split("") : snum2.split("");
@@ -237,6 +252,7 @@ const multiply = (snum1, snum2) => {
 };
 
 module.exports = {
+  numinbase10,
   snumpat,
   sum,
   minus,
