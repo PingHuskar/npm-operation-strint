@@ -42,3 +42,14 @@ test(`divby2`, () => {
   expect(op.divby2(`12000001`)).toBe(`6000000.5`);
   expect(op.divby2(`121`)).toBe(`60.5`);
 });
+
+test(`pow`, () => {
+  expect(op.pow(`36`, `1`)).toBe(`36`);
+  expect(op.pow(`2`, `5`)).toBe(`32`);
+  expect(op.pow(`2`, `2`)).toBe(`4`);
+  expect(op.pow(`2`, `4`)).toBe(`16`);
+  expect(op.pow(`5`, `2`)).toBe(`25`);
+  expect(op.pow(`4`, `2`)).toBe(`16`);
+  expect(op.pow(`4`, `0`)).toBe(`1`);
+  expect(op.pow(`0`, `0`)).toBe(`1`);
+});
