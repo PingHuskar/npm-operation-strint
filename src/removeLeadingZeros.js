@@ -1,0 +1,1 @@
+module.exports = (string) => string.replace(/^0+/g, "");

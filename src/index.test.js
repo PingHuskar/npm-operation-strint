@@ -53,3 +53,12 @@ test(`pow`, () => {
   expect(op.pow(`4`, `0`)).toBe(`1`);
   expect(op.pow(`0`, `0`)).toBe(`1`);
 });
+
+test(`photo`, () => {
+  expect(op.photo(`01`)).toBe(`02`);
+  expect(op.photo(`000001`)).toBe(`000002`);
+  expect(op.photo(`000000`)).toBe(`000001`);
+  expect(op.photo(`JHGAJHFJD000000`)).toBe(`JHGAJHFJD000001`);
+  expect(op.photo(`กหัแอแ0999999`)).toBe(`กหัแอแ1000000`);
+  expect(op.photo(`9999`)).toBe(`0000`);
+})
